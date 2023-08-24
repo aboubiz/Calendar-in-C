@@ -1,6 +1,7 @@
 #include<stdio.h>
-#include<conio.h>
-#include<windows.h>
+#include<stdlib.h>
+//#include<conio.h>
+//#include<windows.h>
 
 int getkey();
 void display(int,int,int,int[]);
@@ -9,28 +10,14 @@ void calendar(int,int);
 //-------------- GOTO function definition ----------------------
 void gotoxy(int x,int y)
 {
-    COORD coord;
-    coord.X=x;
-    coord.Y=y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
+    printf("\033[%d;%dH", y+1, x+1);
 }
 
 //------------ Change color -------------------
 void SetColor(int ForgC)
 {
-     WORD wColor;
-                          //We will need this handle to get the current background attribute
-     HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-     CONSOLE_SCREEN_BUFFER_INFO csbi;
-
-                           //We use csbi for the wAttributes word.
-     if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
-     {
-                     //Mask out all but the background attribute, and add in the forgournd color
-          wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
-          SetConsoleTextAttribute(hStdOut, wColor);
-     }
-     return;
+    printf("\033[%dm",ForgC);
+    return;
 }
 
 
@@ -41,14 +28,20 @@ int main()
 {
     int nmonth,nyr,ch;
     enteryear:
+
+    
+    printf("%s","Enter year:");
+    int ret = scanf("%d",&nyr);
+    printf("%s","Enter month:");
+    ret = scanf("%d", &nmonth);
+    
     while(1)
     {
-        printf("Enter year and month(number):" );
-        scanf("%d%d",&nyr,&nmonth);
+        
         if(nyr<1945)
         {
             //If year less than 1945
-            printf("\n\t Please enter year above 1945\n");
+            printf("\n\t %s\n","Please enter year above 1945");
             continue;
         }
         else
@@ -62,9 +55,10 @@ int main()
         gotoxy(20,22);printf("(*) Press P to go to particular year and month.");
         gotoxy(20,24);printf("(*) Press ESC to Exit.");
         ch=getkey();
+        printf("%d",ch);
         switch(ch)
         {
-        case 80: //-------- DOWN ARROW -----------
+        case 66: //-------- DOWN ARROW -----------
                //Increasing month
                 if(nmonth==12)
                 {
@@ -78,12 +72,12 @@ int main()
                 }
                 calendar(nyr,nmonth);
                 break;
-        case 77: //-------- RIGHT ARROW ----------
+        case 67: //-------- RIGHT ARROW ----------
             //Increasing Year
                 nyr++;
                 calendar(nyr,nmonth);
                 break;
-        case 72: //------- UP ARROW -------------
+        case 65: //------- UP ARROW -------------
             // Decreasing Month
                 if(nmonth==1)
                 {
@@ -95,7 +89,7 @@ int main()
                     nmonth--;
                 calendar(nyr,nmonth);
                 break;
-        case 75: //-------- LEFT ARROW ----------
+        case 68: //-------- LEFT ARROW ----------
             //Decreasing year
                 if(nyr==1945)
                 {
@@ -111,19 +105,22 @@ int main()
                 break;
         case 27: //--------- ESC KEY ------------
             //Exit program
-                system("cls");
+                system("clear");
                 gotoxy(50,14);printf("Exiting program.\n\n\n\n\n");
+                //
                 exit(0);
         case 112://---------- p KEY ------------
             //Go to particular year and month
-                system("cls");
-                goto enteryear;
+            system("clear");
+            
+            //system("stty -raw echo");
+            goto enteryear;
         }
         }
         break;
 
     }
-    getch();
+    getchar();
     return 0;
 }
 
@@ -132,18 +129,18 @@ int main()
 void display(int nyr,int nmonth,int tdays,int days[])
 {
     int i,j,pos;
-    SetColor(12); //Color red
+    SetColor(31); //Color red
     gotoxy(56,6);printf("%s %d",month[nmonth-1],nyr); //Heading year and month dispalying
     for(i=0,pos=30;i<7;i++,pos+=10)
     {
          if(i==6)
-            SetColor(9); //Sunday color blue
+            SetColor(34); //Sunday color blue
          else
-            SetColor(10);  //Others day color green
+            SetColor(32);  //Others day color green
         gotoxy(pos,8);printf("%s",week[i]);
     }
 
-    SetColor(15); //setting the color white
+    SetColor(37); //setting the color white
 
    tdays++; //incrementing the tdays by 1
     if(tdays==0 || tdays==7)
@@ -164,9 +161,9 @@ void display(int nyr,int nmonth,int tdays,int days[])
     for(i=0,j=10,pos;i<days[nmonth-1];i++,pos+=10)
     {
         if(pos==91)
-            SetColor(8); //Changing color to dark grey for sunday
+            SetColor(36); //Changing color to cyan for sunday
         else
-            SetColor(7); //Changing color to white for all days
+            SetColor(37); //Changing color to white for all days
 
         gotoxy(pos,j);printf("%d",i+1);
         if(pos==91)
@@ -176,33 +173,49 @@ void display(int nyr,int nmonth,int tdays,int days[])
         }
     }
 
-    SetColor(5); //Changing color to purple
+    SetColor(35); //Changing color to purple
 
     //Drawing horizontal line
     for(i=22;i<102;i++)
     {
-        gotoxy(i,4);printf("%c",196);
-        gotoxy(i,17);printf("%c",196);
+        gotoxy(i,4);printf("%s","─");
+        gotoxy(i,17);printf("%s","─");
     }
 
     //Drawing all the corner of the rectangle
-    gotoxy(21,4);printf("%c",218);
-    gotoxy(102,4);printf("%c",191);
-    gotoxy(21,17);printf("%c",192);
-    gotoxy(102,17);printf("%c",217);
+    gotoxy(21,4);printf("%s","┌");
+    gotoxy(102,4);printf("%s","┐");
+    gotoxy(21,17);printf("%s","└");
+    gotoxy(102,17);printf("%s","┘");
 
     //Drawing vertical line
     for(i=5;i<17;i++)
     {
-        gotoxy(21,i);printf("%c",179);
-        gotoxy(102,i);printf("%c",179);
+        gotoxy(21,i);printf("%s","│");
+        gotoxy(102,i);printf("%s","│");
     }
 
-    SetColor(11); //Changing color to aqua
+    SetColor(33); //Changing color to yellow
 
     //Drawing left and the right navigation symbol
-    gotoxy(24,11);printf("%c",174);
-    gotoxy(98,11);printf("%c",175);
+    gotoxy(24,11);printf("%s","⏪");
+    gotoxy(98,11);printf("%s","⏩");
+
+}
+
+
+int getch(void)    {
+
+        int c;
+
+        c = getchar();
+
+        if (c == 27) {
+            c = getchar();
+            c = getchar();
+        }
+
+        return c;
 
 }
 
@@ -210,14 +223,9 @@ void display(int nyr,int nmonth,int tdays,int days[])
 int getkey()
 {
     int ch;
-    ch=getch();
-     if(ch==0)
-    {
-        printf("zero");
-        ch=getch();
-
-        return ch;
-    }
+    system("stty raw -echo");
+    ch = getch();
+    system("stty -raw echo");
     return ch;
 }
 
@@ -226,7 +234,7 @@ void calendar(int nyr,int nmonth)
 {
     int days[12]={31,28,31,30,31,30,31,31,30,31,30,31};
     int tdays=0,k,myear;
-    system("cls");
+    system("tput reset");
     myear=nyr-1; //Decreasing year by 1
             if(myear>=1945)
             {

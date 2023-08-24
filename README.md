@@ -3,4 +3,4 @@ This is a basic calendar program created using simple c program, using this prog
 
  # Screen Shot
 
-  ![Sample Portfolio](https://github.com/Rocktim53/GUI-Calendar-in-C/blob/master/screenshot.png)
+  ![Sample Portfolio](https://github.com/aboubiz/Calendar-in-C/blob/master/screenshot.png)

@@ -55,7 +55,6 @@ int main()
         gotoxy(20,22);printf("(*) Press P to go to particular year and month.");
         gotoxy(20,24);printf("(*) Press ESC to Exit.");
         ch=getkey();
-        printf("%d",ch);
         switch(ch)
         {
         case 66: //-------- DOWN ARROW -----------
